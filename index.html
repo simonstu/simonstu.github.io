@@ -2,15 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neigborhood Map - Cafés in Montevideo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-
+    <div class="top-menu-flex-container">
+        <div class="flex-menu-top">
+            Neigborhood Map - Cafés in Montevideo
+        </div>
+        <div class="flex-menu-top right">
+            <i id="menu-btn" class="fa fa-bars" aria-hidden="true"></i>
+        </div>
+    </div>
+    <div class="main-flex-container">
+        <div id="menu-container">
+            <div id="menu">
+                <h2>Cafés in Montevideo</h2>
+                <div class="input-group">
+                    <input type="text" class="form-control" data-bind="textInput: inputValue" placeholder="Filter for...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">Filter!</button>
+                    </span>
+                </div>
+                <div id="location-list" class="list-group" data-bind="foreach: filteredLocationList">
+                    <button class="list-group-item" data-bind="text: title, event: { mouseover: $parent.hightlightMarker, mouseout: $parent.diminishMarker, click: $parent.selectLocationFromList }, css: { highlight: highlight, selected: selected }"> </button>
+                </div>
+            </div>
+            <div id="hideMenu-btn-Container">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            </div>
+        </div>
+        <div id="map" class="flex-map-item">Trying to load Google Maps</div>
+    </div>
     <script src="js/lib/knockout-3.4.0.js"></script>
-    <script src="js/lib/jquery-3.1.1.slim.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://use.fontawesome.com/ab895e72e7.js"></script>
     <script src="js/model.js"></script>
-    <script src="js/view.js"></script>
+    <script src="js/map.js"></script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTx0QyG23zsgyiKv46vLdK12xjWeUjp7w&v=3">
+    </script>
     <script src="js/app.js"></script>
 </body>
 </html>
