@@ -1,5 +1,5 @@
 # Neighborhood Map - Cafés in Montevideo
-Got to [https://simonstu.github.io/](https://simonstu.github.io/) to see the map in action
+Download or clone this repository and open _index.html_ in your favorite browser or go to [https://simonstu.github.io/](https://simonstu.github.io/) to see the map in action.
 
 # Specifications
 

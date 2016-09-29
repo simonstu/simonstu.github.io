@@ -1,9 +1,10 @@
 // create the ViewModel and apply it when google maps is fully loaded
-$(window).on('load', function() {
+// allows showing/hiding of the location list if screen size makes this necessary
+function initApp() {
     // Location object
     var Location = function(data) {
-        this.title = ko.observable(data.title);
-        this.id = ko.observable(data.id);
+        this.title = data.title;
+        this.id = data.id;
         this.highlight = ko.observable(false);
         this.selected = ko.observable(false);
         if (data.address) {
@@ -38,7 +39,7 @@ $(window).on('load', function() {
     .fail(function() {
         // query to foursquare was not successful -> use hardcoded locations
         locationsArray = hardCodedLocations;
-        alert( "error" );
+        alert( "Foursquare has failed to load. Please refresh the page or try again later." );
     })
 
     var ViewModel = function() {
@@ -64,22 +65,11 @@ $(window).on('load', function() {
             var position = locationsArray[i].location;
             var title = locationsArray[i].title;
             var id = locationsArray[i].id;
-            var marker = new google.maps.Marker({
-              //map: map,
-              position: position,
-              title: title,
-              animation: google.maps.Animation.DROP,
-              id: id,
-              icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
-              listElement: location
-            });
-            markers.push(marker);
+            var marker = createMarker(position, title, id, location);
             // adds a link to the fitting marker
             location.marker = marker;
         };
-
-        // initializes the map
-        initMap();
+        map.fitBounds(bounds);
 
         // highlights the fitting marker on the map, when the mouse is over a list item
         self.hightlightMarker = function(item) {
@@ -103,6 +93,37 @@ $(window).on('load', function() {
 
     };
 
+    function createMarker(position, title, id, location) {
+        var marker = new google.maps.Marker({
+            map: map,
+            position: position,
+            title: title,
+            animation: google.maps.Animation.DROP,
+            id: id,
+            icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            listElement: location
+        });
+        bounds.extend(marker.position);
+
+        // show infowindow and highlight marker as well as list item if marker is clicked
+        marker.addListener('click', function() {
+            populateInfoWindow(this, largeInfowindow);
+            selectLocation(this.listElement);
+        });
+        // highlight list item and change marker color by mouse over the marker
+        marker.addListener('mouseover', function() {
+            this.listElement.highlight(true);
+            if (!this.listElement.selected()) this.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+        });
+        // resets highlight if mouse moves out from the marker
+        marker.addListener('mouseout', function() {
+            this.listElement.highlight(false);
+            if (!this.listElement.selected()) this.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png');
+        });
+        markers.push(marker);
+        return marker;
+    }
+
     // gives back an array of locations based on the input field
     function filterLocationList(filterText, list) {
         var filteredList = [];
@@ -115,7 +136,7 @@ $(window).on('load', function() {
         }
         for (var i = 0; i<list.length; i++) {
             // add locations with the input text in the title to the list and add them to the map
-            if (list[i].title().toLowerCase().indexOf(filterText.toLowerCase()) >= 0) {
+            if (list[i].title.toLowerCase().indexOf(filterText.toLowerCase()) >= 0) {
                 filteredList.push(list[i]);
                 list[i].marker.setMap(map);
             }
@@ -126,7 +147,22 @@ $(window).on('load', function() {
         }
         return filteredList;
     }
-});
+
+    // add listener to show the menu if necessary
+    $('#menu-btn').click(hideMainMenu);
+    $('#hideMenu-btn-Container').click(hideMainMenu);
+
+    function hideMainMenu() {
+        $menuDiv = $('#menu-container');
+        if ($menuDiv.css('display') === 'none') {
+            $menuDiv.css('display', 'block');
+        } else {
+            $menuDiv.css('display', '');
+        }
+        // make sure all markers are visible
+        if (map) map.fitBounds(bounds);
+    }
+}
 
 /* highlights the item in the list and the marker according to the location
 reset a previous selected item/marker */
@@ -143,21 +179,3 @@ function selectLocation(location) {
         location.selected(true);
     }
 }
-
-// allows showing/hiding of the location list if screen size makes this necessary
-$( document ).ready(function() {
-    // add listener to show the menu if necessary
-    $('#menu-btn').click(hideMainMenu);
-    $('#hideMenu-btn-Container').click(hideMainMenu);
-
-    function hideMainMenu() {
-        $menuDiv = $('#menu-container');
-        if ($menuDiv.css('display') === 'none') {
-            $menuDiv.css('display', 'block');
-        } else {
-            $menuDiv.css('display', '');
-        }
-        // make sure all markers are visible
-        if (map) map.fitBounds(bounds);
-    }
-});

@@ -12,32 +12,13 @@ function initMap() {
         scrollwheel: false,
         zoom: 8
     });
-
     bounds = new google.maps.LatLngBounds();
     largeInfowindow = new google.maps.InfoWindow();
+    initApp();
+}
 
-    markers.forEach(function(marker) {
-        marker.setMap(map);
-        bounds.extend(marker.position);
-
-        // show infowindow and highlight marker as well as list item if marker is clicked
-        marker.addListener('click', function() {
-            populateInfoWindow(this, largeInfowindow);
-            selectLocation(this.listElement);
-        });
-        // highlight list item and change marker color by mouse over the marker
-        marker.addListener('mouseover', function() {
-            this.listElement.highlight(true);
-            if (!this.listElement.selected()) this.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
-        });
-        // resets highlight if mouse moves out from the marker
-        marker.addListener('mouseout', function() {
-            this.listElement.highlight(false);
-            if (!this.listElement.selected()) this.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png');
-        });
-    });
-    // show all marker
-    map.fitBounds(bounds);
+function googleError() {
+    alert( "Google Maps has failed to load. Please refresh the page or try again later." );
 }
 
 // show the infowindow for the marker
